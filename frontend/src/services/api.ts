@@ -11,7 +11,9 @@ import {
 } from '@/types/simulation';
 import { mockSimulationStore } from './mockData';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? (
+  process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8000'
+);
 
 async function fetchWithFallback<T>(url: string, fallbackFn: () => T, options?: RequestInit): Promise<T> {
   try {
@@ -204,6 +206,5 @@ export const simulationApi = {
     }
   }
 };
-
 
 

@@ -473,9 +473,28 @@ Located in the **`/admin`** console, network administrators can provision live t
 
 ## 11. Installation & Quick Start Guide
 
+### Docker Compose Deployment (GCP Compute Engine)
+
+This Compose setup is intended for a single Compute Engine VM. The frontend and Django API are routed through Nginx on port 80; SQLite data persists in a named Docker volume. It is not intended for Cloud Run or multi-instance deployments.
+
+1. Install Docker Engine and the Docker Compose plugin on the VM, and allow inbound TCP port 80 in its firewall.
+2. From the repository root, create the environment file:
+   ```bash
+   cp .env.example .env
+   openssl rand -base64 48
+   ```
+3. Put the generated value in `DJANGO_SECRET_KEY`, add the VM's external IP address and/or DNS name to `ALLOWED_HOSTS`, and optionally set `PRIVATE_MODEL_KEY`. For HTTPS admin access, set `CSRF_TRUSTED_ORIGINS` to the public `https://` origin and terminate TLS with a Google Cloud load balancer or another HTTPS proxy.
+4. Build and start the services:
+   ```bash
+   docker compose up --build -d
+   ```
+5. Open `http://<VM_EXTERNAL_IP>/`. View service logs with `docker compose logs -f`; stop services with `docker compose down`. The database volume is retained when stopping the services.
+
+The frontend image uses same-origin API requests through Nginx. If setting `NEXT_PUBLIC_API_URL`, set it before building to the public origin that serves `/api` (normally leave it unset).
+
 ### Prerequisites
 * **Python 3.10+** (with `pip`)
-* **Node.js 18+** (with `npm`)
+* **Node.js 20.9+** (with `npm`)
 * **Git**
 
 ### Step 1: Clone the Repository
